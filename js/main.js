@@ -727,6 +727,9 @@ function login(data) {
     // show user name
     $("#user_name_id").html(user.nm);
     // create a map in the "map" div
+    var google = L.tileLayer("http://mt1.google.com/vt/lyrs=y&x={x}&y={y}43&z={z}", {
+        attribution: "&copy; Google Maps"
+    });
     var gurtam = L.tileLayer.webGis(sess.getBaseGisUrl(), {
         attribution: "&copy; YTM Maps",
         minZoom: 4,
@@ -735,9 +738,10 @@ function login(data) {
     var osm = L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
         attribution: "&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
     });
-    map = L.map("map_id", {layers: [gurtam]}).setView([52.32728615559, 9.798388481140], 14);
+    map = L.map("map_id", {layers: [google]}).setView([37.96007660, 58.32606290], 14);
     map.zoomControl.setPosition('bottomright');
     L.control.layers({
+        "Google maps": google,
         "YTM Maps": gurtam,
         "OpenStreetMap": osm
     }).addTo(map);
