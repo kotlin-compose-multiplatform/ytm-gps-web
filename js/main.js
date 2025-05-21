@@ -732,8 +732,8 @@ function login(data) {
         minZoom: 4,
         userId: user.id
     });
-    var osm = L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+    var osm = L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors"
     });
     map = L.map("map_id", {layers: [gurtam]}).setView([52.32728615559, 9.798388481140], 14);
     map.zoomControl.setPosition('bottomright');
