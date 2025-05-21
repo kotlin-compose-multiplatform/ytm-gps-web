@@ -1,0 +1,77 @@
+TRANSLATIONS = {
+	"Icon": "",
+
+	"Name": "",
+
+	"Last message": "",
+
+	"No data": "",
+	"Choose a unit": "",
+	"Search by name": "",
+
+	"km/h": "",
+	"mph": "",
+	"d": "",
+	"h": "",
+	"m": "",
+	"s": "",
+
+	"Speed": "",
+	"Location": "",
+	"Event": "",
+	"Start": "",
+	"Duration": "",
+	"Distance": "",
+	"Avg.speed": "",
+	"Max.speed": "",
+
+	"Stop": "",
+	"Trip": "",
+	"Parking": "",
+
+	"Yesterday": "",
+	"Today": "",
+	"Week": "",
+	"Month": "",
+
+	"Sunday": "",
+	"Monday": "",
+	"Tuesday": "",
+	"Wednesday": "",
+	"Thursday": "",
+	"Friday": "",
+	"Saturday": "",
+
+	"January": "",
+	"February": "",
+	"March": "",
+	"April": "",
+	"May": "",
+	"June": "",
+	"July": "",
+	"August": "",
+	"September": "",
+	"October": "",
+	"November": "",
+	"December": "",
+
+	"Sun": "",
+	"Mon": "",
+	"Tue": "",
+	"Wed": "",
+	"Thu": "",
+	"Fri": "",
+	"Sat": "",
+
+	"Jan": "",
+	"Feb": "",
+	"Mar": "",
+	"Apr": "",
+	"Jun": "",
+	"Jul": "",
+	"Aug": "",
+	"Sep": "",
+	"Oct": "",
+	"Nov": "",
+	"Dec": ""
+};

@@ -1,0 +1,55 @@
+{
+	"name": "one_wialon",
+	"url_name": "onewialon",
+	"title": "One Wialon",
+	"description": "Represents basic user interface created on the basis of Wialon Kit tools. The basic interface includes main tracking capabilities: the available tracking units list, the possibility to track them on the map in real time and check their speed indicators, etc.",
+	"author": {
+		"name": "",
+		"url": "http://gurtam.com"
+	},
+	"licenses": [
+		{
+			"type":" MIT",
+			"url": "https://github.com/wialon/wialon-app-onewialon/blob/master/LICENSE-MIT"
+		}
+	],
+	"dependencies": {
+		"jquery": "1.8.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wialon/wialon-app-onewialon"
+	},
+	"modules": [
+		"sdk"
+	],
+	"params": [
+		"Active SID",
+		"Base URL",
+		"Host URL",
+		"Language",
+		"Current user"
+	],
+	"language": [
+		"en",
+		"ru"
+	],
+	"build_date": "2015-05-28",
+	"release_date": "2013-03-18",
+	"version": "1.6",
+	"keywords": [
+		"wialon",
+		"wialon-apps",
+		"wialon one"
+	],
+	"browser": {
+		"ie": "9+",
+		"opera": "10+",
+		"safari": "5+",
+		"chrome": "20+",
+		"firefox": "15+"
+	},
+	"logo": "logo.png",
+	"images_path": "images",
+	"desc_path": "desc"
+}
