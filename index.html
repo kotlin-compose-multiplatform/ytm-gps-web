@@ -86,6 +86,48 @@
  				</table>
  			</div>
  		</div>
+
+ 		<!-- Mobile Bottom Sheet -->
+ 		<div class="bottom-sheet">
+ 			<div class="bottom-sheet-handle"></div>
+ 			<div class="bottom-sheet-close"></div>
+ 			<div class="bottom-sheet-content">
+ 				<!-- Events container for mobile -->
+ 				<div id="mobile-events-container" class="y-scroll-container">
+ 					<table class="tbl">
+ 						<thead>
+ 							<tr class="order">
+ 								<th id="mobile-type-col"></th>
+ 								<th id="mobile-start-col"></th>
+ 								<th id="mobile-time-col"></th>
+ 								<th id="mobile-distance-col"></th>
+ 								<th id="mobile-avg-speed-col"></th>
+ 								<th id="mobile-max-speed-col"></th>
+ 							</tr>
+ 						</thead>
+ 						<tbody id="mobile-events-tbl">
+ 							<tr>
+ 								<td id="mobile-events-descr" colspan="7" class="centered"></td>
+ 							</tr>
+ 						</tbody>
+ 					</table>
+ 				</div>
+
+ 				<!-- Timepicker for mobile -->
+ 				<div id="mobile-timepicker" class="timepicker">
+ 					<table class="tbl">
+ 						<tbody>
+ 							<tr>
+ 								<td id="mobile-btn-yesterday" data-period="0"></td>
+ 								<td id="mobile-btn-today" data-period="1" class="active"></td>
+ 								<td id="mobile-btn-week" data-period="2"></td>
+ 								<td id="mobile-btn-month" data-period="3"></td>
+ 							</tr>
+ 						</tbody>
+ 					</table>
+ 				</div>
+ 			</div>
+ 		</div>
 		</div>
 	</div>
 	</body>

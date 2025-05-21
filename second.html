@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Map UI</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e0e0e0;
+            overflow: hidden; /* Prevents body scroll on mobile if container is larger */
+        }
+
+        .mobile-container {
+            width: 375px; /* Typical mobile width */
+            height: 667px; /* Typical mobile height (iPhone 6/7/8) */
+            background-color: #a0e0a0; /* Light green */
+            border: 2px solid #333;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden; /* Crucial for positioning bottom sheet */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            flex-shrink: 0;
+        }
+
+        .drawer-btn {
+            background-color: #a0c4ff; /* Light blue */
+            border: 1px solid #608ac4;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 24px;
+            box-sizing: border-box;
+        }
+
+        .drawer-btn span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+        }
+
+        .username-display {
+            background-color: #fffacd; /* Light yellow */
+            border: 1px solid #f0e68c;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .map-area {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* For zoom controls */
+        }
+
+        .map-area h1 {
+            font-size: 1.8em;
+            color: #333;
+            text-align: center;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px; /* Relative to map-area, so above the bottom sheet's initial position */
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .zoom-controls button {
+            background-color: #ffb6c1; /* Light pink/coral */
+            border: 1px solid #f08080;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .zoom-controls button:active {
+            background-color: #f08080;
+        }
+
+
+        .bottom-sheet {
+            background-color: #add8e6; /* Light blue */
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 0 20px 20px; /* No top padding, handle takes space */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%; /* Initial height */
+            min-height: 60px; /* Minimum draggable height */
+            max-height: 85%; /* Maximum draggable height */
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            transition: height 0.3s ease-out;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        .drag-handle-area {
+            padding-top: 10px; /* Space for handle itself */
+            padding-bottom: 10px; /* Space below handle */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            cursor: ns-resize; /* North-South resize cursor */
+            flex-shrink: 0;
+        }
+
+        .drag-handle {
+            width: 50px;
+            height: 5px;
+            background-color: #777;
+            border-radius: 2.5px;
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .sheet-title {
+            font-size: 0.9em;
+            color: #333;
+            flex-grow: 1;
+            text-align: left; /* As per image, seems left aligned below handle */
+            padding-left: 5px; /* Adjust if needed */
+        }
+
+        .close-sheet-btn {
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .close-sheet-btn:active {
+            background-color: #ccc;
+        }
+
+        .tab-bar {
+            display: flex;
+            justify-content: space-between; /* Distribute space evenly */
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            flex-shrink: 0;
+        }
+
+        .tab-bar button {
+            border: none;
+            background-color: transparent;
+            padding: 8px 0; /* Vertical padding, horizontal auto by flex */
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.85em;
+            flex-grow: 1; /* Make buttons fill available space */
+            text-align: center;
+            color: #333;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .tab-bar button.active {
+            background-color: #007bff; /* Blue for active */
+            color: white;
+        }
+
+        .table-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th, .history-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8em;
+        }
+
+        .history-table th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0; /* For scrolling within table-container */
+            z-index: 1;
+        }
+
+        /* Hide scrollbar for webkit browsers, but still scrollable */
+        .table-container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="mobile-container">
+    <header>
+        <button class="drawer-btn" aria-label="Open drawer">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="username-display">Username</div>
+    </header>
+
+    <main class="map-area">
+        <h1>MAP FULL Screen</h1>
+        <div class="zoom-controls">
+            <button class="zoom-out-btn" aria-label="Zoom out">-</button>
+            <button class="zoom-in-btn" aria-label="Zoom in">+</button>
+        </div>
+    </main>
+
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="drag-handle-area" id="dragHandleArea">
+            <div class="drag-handle"></div>
+        </div>
+        <div class="sheet-header">
+            <p class="sheet-title">Time history bottom sheet with drag to expand action and body table</p>
+            <button class="close-sheet-btn" id="closeSheetBtn" aria-label="Close sheet">X</button>
+        </div>
+
+        <nav class="tab-bar" id="tabBar">
+            <button class="tab active" data-tab="today">Today</button>
+            <button class="tab" data-tab="yesterday">Yesterday</button>
+            <button class="tab" data-tab="week">Week</button>
+            <button class="tab" data-tab="month">Month</button>
+        </nav>
+        <div class="table-container">
+            <table class="history-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>KM</th>
+                    <th>Speed</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                <!-- Rows will be populated by JS or could be static -->
+                <tr>
+                    <td>001</td>
+                    <td>12.5</td>
+                    <td>45 km/h</td>
+                    <td>2024-07-26</td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>8.2</td>
+                    <td>30 km/h</td>
+                    <td>2024-07-26</td>
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>25.0</td>
+                    <td>60 km/h</td>
+                    <td>2024-07-25</td>
+                </tr>
+                <tr>
+                    <td>004</td>
+                    <td>5.7</td>
+                    <td>22 km/h</td>
+                    <td>2024-07-25</td>
+                </tr>
+                <tr>
+                    <td>005</td>
+                    <td>18.1</td>
+                    <td>50 km/h</td>
+                    <td>2024-07-24</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const bottomSheet = document.getElementById('bottomSheet');
+    const dragHandleArea = document.getElementById('dragHandleArea');
+    const closeSheetBtn = document.getElementById('closeSheetBtn');
+    const tabBar = document.getElementById('tabBar');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const mobileContainer = document.querySelector('.mobile-container');
+    const drawerBtn = document.querySelector('.drawer-btn');
+    const zoomInBtn = document.querySelector('.zoom-in-btn');
+    const zoomOutBtn = document.querySelector('.zoom-out-btn');
+
+    let isDragging = false;
+    let startY;
+    let startHeight;
+
+    const minHeightPx = parseFloat(getComputedStyle(bottomSheet).minHeight);
+    const maxHeightPercent = parseFloat(getComputedStyle(bottomSheet).maxHeight) / 100;
+
+    // Initial collapsed height (can be same as minHeight or slightly different)
+    const initialCollapsedHeight = 60; // pixels, for when 'X' is clicked
+
+    dragHandleArea.addEventListener('mousedown', startDrag);
+    dragHandleArea.addEventListener('touchstart', startDrag, { passive: false });
+
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', drag, { passive: false });
+
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('touchend', stopDrag);
+
+    function startDrag(e) {
+        e.preventDefault(); // Prevent text selection or other default touch actions
+        isDragging = true;
+        startY = e.pageY || e.touches[0].pageY;
+        startHeight = bottomSheet.offsetHeight;
+        bottomSheet.style.transition = 'none'; // Disable transition during drag for smoothness
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        const currentY = e.pageY || e.touches[0].pageY;
+        const deltaY = startY - currentY; // Drag up = positive delta = increase height
+        let newHeight = startHeight + deltaY;
+
+        const containerHeight = mobileContainer.offsetHeight;
+        const maxHeightPx = containerHeight * maxHeightPercent;
+
+        // Apply constraints
+        if (newHeight < minHeightPx) newHeight = minHeightPx;
+        if (newHeight > maxHeightPx) newHeight = maxHeightPx;
+
+        bottomSheet.style.height = `${newHeight}px`;
+    }
+
+    function stopDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        bottomSheet.style.transition = 'height 0.3s ease-out'; // Re-enable transition
+
+        // Optional: Snap to certain positions
+        // const currentHeight = bottomSheet.offsetHeight;
+        // if (currentHeight < minHeightPx + 50) bottomSheet.style.height = `${minHeightPx}px`;
+        // else if (currentHeight > maxHeightPx - 50) bottomSheet.style.height = `${maxHeightPx}px`;
+    }
+
+    closeSheetBtn.addEventListener('click', () => {
+        bottomSheet.style.height = `${initialCollapsedHeight}px`; // Collapse to a minimal view
+    });
+
+    tabBar.addEventListener('click', (e) => {
+        if (e.target.classList.contains('tab')) {
+            tabBar.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
+            const selectedTab = e.target.dataset.tab;
+            // console.log('Selected tab:', selectedTab);
+            // Here you would typically fetch/filter data for the table
+            loadTableData(selectedTab);
+        }
+    });
+
+    function loadTableData(tab) {
+        // Dummy data loader
+        let data = [];
+        switch (tab) {
+            case 'today':
+                data = [
+                    { id: '001', km: '12.5', speed: '45 km/h', date: '2024-07-26' },
+                    { id: '002', km: '8.2', speed: '30 km/h', date: '2024-07-26' },
+                ];
+                break;
+            case 'yesterday':
+                data = [
+                    { id: '003', km: '25.0', speed: '60 km/h', date: '2024-07-25' },
+                    { id: '004', km: '5.7', speed: '22 km/h', date: '2024-07-25' },
+                ];
+                break;
+            case 'week':
+                data = [
+                    { id: '005', km: '18.1', speed: '50 km/h', date: '2024-07-24' },
+                    { id: '006', km: '3.2', speed: '15 km/h', date: '2024-07-23' },
+                    { id: '007', km: '33.5', speed: '70 km/h', date: '2024-07-22' },
+                ];
+                break;
+            case 'month':
+                data = [
+                    { id: '008', km: '150.0', speed: '55 km/h', date: '2024-07-xx' },
+                    { id: '009', km: '120.5', speed: '48 km/h', date: '2024-07-xx' },
+                ];
+                break;
+            default:
+                data = [{id: 'N/A', km: '-', speed: '-', date: '-'}];
+        }
+
+        historyTableBody.innerHTML = ''; // Clear existing rows
+        data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                    <td>${row.id}</td>
+                    <td>${row.km}</td>
+                    <td>${row.speed}</td>
+                    <td>${row.date}</td>
+                `;
+            historyTableBody.appendChild(tr);
+        });
+    }
+
+    // Initial data load for the default active tab
+    loadTableData('today');
+
+    // Placeholder actions for other buttons
+    drawerBtn.addEventListener('click', () => {
+        alert('Drawer button clicked!');
+    });
+    zoomInBtn.addEventListener('click', () => {
+        alert('Zoom In button clicked!');
+    });
+    zoomOutBtn.addEventListener('click', () => {
+        alert('Zoom Out button clicked!');
+    });
+
+</script>
+</body>
+</html>

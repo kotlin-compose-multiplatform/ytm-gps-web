@@ -3,6 +3,7 @@ html, body {
      margin: 0px;
      font-family: Arial, Helvetica, sans-serif;
      cursor: default;
+     overflow: hidden;
 }
 
 #page {
@@ -18,6 +19,8 @@ html, body {
     font-size: 20px;
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 1000;
 }
 
 #header > * {
@@ -52,15 +55,28 @@ html, body {
 @media screen and (max-width: 768px) {
     #header {
         font-size: 16px;
+        background: transparent;
+        border-bottom: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
     }
 
     #logo {
-        margin: 7px 5px 7px 5px;
-        height: 30px;
+        display: none;
+    }
+
+    #app-name {
+        display: none;
     }
 
     #user_info {
-        font-size: 14px;
+        font-size: 16px;
+        color: #fff;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        margin-right: 20px;
     }
 }
 
@@ -104,42 +120,111 @@ html, body {
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
     #content {
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
     }
 
     #left_column {
-        float: none;
-        width: 100%;
-        max-width: 100%;
-        height: 40%;
-        order: 2;
+        display: none; /* Initially hidden, shown in bottom sheet */
     }
 
     #right_column {
-        position: relative;
+        position: absolute;
         left: 0;
+        top: 0;
         width: 100%;
-        height: 60%;
-        order: 1;
+        height: 100%;
+        z-index: 1;
     }
 
-    /* Adjust timepicker for mobile */
-    .timepicker {
-        position: absolute;
+    /* Bottom sheet for events and timepicker */
+    .bottom-sheet {
+        position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        z-index: 900;
-        width: 100%;
+        background: white;
+        z-index: 950;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+        transform: translateY(calc(100% - 80px));
+        height: 70%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Hide bottom sheet on desktop */
+    @media screen and (min-width: 769px) {
+        .bottom-sheet {
+            display: none;
+        }
+    }
+
+    .bottom-sheet.expanded {
+        transform: translateY(0);
+    }
+
+    .bottom-sheet-handle {
+        width: 40px;
+        height: 5px;
+        background: #ccc;
+        border-radius: 3px;
+        margin: 10px auto;
+        cursor: pointer;
+    }
+
+    .bottom-sheet-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 960;
+    }
+
+    .bottom-sheet-close:before,
+    .bottom-sheet-close:after {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 2px;
+        background: #333;
+    }
+
+    .bottom-sheet-close:before {
+        transform: rotate(45deg);
+    }
+
+    .bottom-sheet-close:after {
+        transform: rotate(-45deg);
+    }
+
+    .bottom-sheet-content {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 0 10px 10px 10px;
     }
 
     /* Make drawer toggle more visible on mobile */
     #drawer-toggle {
-        top: 55px;
-        left: 5px;
+        top: 10px;
+        left: 10px;
         background-color: rgba(33, 52, 79, 0.8);
+        z-index: 1001;
     }
 }
 
@@ -211,11 +296,32 @@ a{
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
     .tbl {
-        font-size: 11px;
+        font-size: 14px;
     }
 
     .tbl td, .tbl th {
-        padding: 5px 2px;
+        padding: 10px 5px;
+        height: 24px;
+    }
+
+    .tbl th {
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    /* Make table rows more tappable */
+    .tbl tr {
+        height: 44px;
+    }
+
+    /* Improve readability of active rows */
+    .tbl tr.active {
+        background: #21344f;
+        color: white;
+    }
+
+    .tbl tr.active td {
+        color: white;
     }
 }
 
@@ -286,6 +392,21 @@ a{
 
 .drawer-overlay.open {
     display: block;
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+    #drawer {
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        z-index: 1002;
+    }
+
+    #drawer.open {
+        left: 0;
+    }
 }
 
 .timepicker {
@@ -423,6 +544,32 @@ a{
     line-height: inherit;
 }
 
+/* Map type control styling */
+.map-type-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    color: #333;
+}
+
+.leaflet-control-layers {
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    margin-bottom: 40px !important;
+}
+
+.leaflet-control-zoom {
+    margin-bottom: 40px !important;
+}
+
+.leaflet-control-layers-toggle {
+    width: 36px;
+    height: 36px;
+    background-size: 20px 20px;
+}
+
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
     .olMarkerLabel {
@@ -438,6 +585,18 @@ a{
     .olMarkerLabel table td {
         font-size: 12px;
         padding: 2px;
+    }
+
+    .map-type-icon {
+        padding: 8px;
+    }
+
+    .leaflet-control-layers {
+        margin-bottom: 40px !important;
+    }
+
+    .leaflet-control-zoom {
+        margin-bottom: 40px !important;
     }
 }
 

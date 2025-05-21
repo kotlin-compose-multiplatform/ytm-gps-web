@@ -366,6 +366,10 @@ function getDetailedInfo(id) {
         $("#units_tbl tr.active").removeClass("active");
         $(id.currentTarget).closest("tr").addClass("active");
         id = $(id.currentTarget).data("id");
+
+        // Close the drawer when a unit is clicked
+        $("#drawer").removeClass("open");
+        $(".drawer-overlay").removeClass("open");
     }
     if (!id) {
         return false;
@@ -441,8 +445,21 @@ function updatePeriod(e) {
     if (btnPeriod == null || (~~btnPeriod === period)) {
         return false;
     }
-    $(e.currentTarget).addClass("active")
-        .siblings().removeClass("active");
+
+    // Update both desktop and mobile timepickers
+    $("#btn-yesterday, #btn-today, #btn-week, #btn-month").removeClass("active");
+    $("#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month").removeClass("active");
+
+    if (btnPeriod === 0) {
+        $("#btn-yesterday, #mobile-btn-yesterday").addClass("active");
+    } else if (btnPeriod === 1) {
+        $("#btn-today, #mobile-btn-today").addClass("active");
+    } else if (btnPeriod === 2) {
+        $("#btn-week, #mobile-btn-week").addClass("active");
+    } else if (btnPeriod === 3) {
+        $("#btn-month, #mobile-btn-month").addClass("active");
+    }
+
     // update current period
     period = ~~btnPeriod;
     // Try to find corrent unit
@@ -516,7 +533,9 @@ function getDetailedEvent(e) {
 // Generate trips table
 function generateTrips(trips, unit) {
     if (!trips || !trips.length || !unit) {
-        $("#events_tbl").html("<tr><td colspan='7' class='centered'>" + translate("No data") + "</td></tr>");
+        var noDataMsg = "<tr><td colspan='7' class='centered'>" + translate("No data") + "</td></tr>";
+        $("#events_tbl").html(noDataMsg);
+        $("#mobile-events-tbl").html(noDataMsg);
         return false;
     }
     var html = "";
@@ -557,6 +576,15 @@ function generateTrips(trips, unit) {
         + "</tr>";
     });
     $("#events_tbl").append(html);
+
+    // Sync with mobile events table
+    $("#mobile-events-tbl").html($("#events_tbl").html());
+
+    // Expand bottom sheet when data is loaded on mobile
+    if ($(window).width() <= 768) {
+        $(".bottom-sheet").addClass("expanded");
+        $(".bottom-sheet").css("transform", "translateY(0)");
+    }
 }
 
 // Convert measuments
@@ -721,7 +749,20 @@ function login(data) {
     $("#btn-week").html(translate("Week"));
     $("#btn-month").html(translate("Month"));
     $("#events_descr").html(translate("Choose a unit"));
+    $("#mobile-events-descr").html(translate("Choose a unit"));
     $("#units_filter").attr("placeholder", translate("Search by name"));
+
+    // Initialize mobile column headers
+    $("#mobile-type-col").html(translate("Event"));
+    $("#mobile-start-col").html(translate("Start"));
+    $("#mobile-time-col").html(translate("Duration"));
+    $("#mobile-distance-col").html(translate("Distance"));
+    $("#mobile-avg-speed-col").html(translate("Avg.speed"));
+    $("#mobile-max-speed-col").html(translate("Max.speed"));
+    $("#mobile-btn-yesterday").html(translate("Yesterday"));
+    $("#mobile-btn-today").html(translate("Today"));
+    $("#mobile-btn-week").html(translate("Week"));
+    $("#mobile-btn-month").html(translate("Month"));
     // Merge default user properties with current
     $.extend(user, sess.getCurrentUser());
     // show user name
@@ -740,11 +781,27 @@ function login(data) {
     });
     map = L.map("map_id", {layers: [google]}).setView([37.96007660, 58.32606290], 14);
     map.zoomControl.setPosition('bottomright');
-    L.control.layers({
+
+    // Create custom layer control with icon
+    var layersControl = L.control.layers({
         "Google maps": google,
         "YTM Maps": gurtam,
         "OpenStreetMap": osm
-    }).addTo(map);
+    }, {}, {position: 'bottomleft'});
+
+    // Add custom class to the control for styling
+    layersControl.addTo(map);
+
+    // Add map icon to the layers control
+    setTimeout(function() {
+        var layersElement = document.querySelector('.leaflet-control-layers');
+        if (layersElement) {
+            var icon = document.createElement('div');
+            icon.className = 'map-type-icon';
+            icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>';
+            layersElement.insertBefore(icon, layersElement.firstChild);
+        }
+    }, 100);
     // try to define user locale
     sess.execute("user/get_locale", {params: {userId: user.id}}, function(data) {
         if (data && ('wd' in data)) {
@@ -817,6 +874,150 @@ function toggleDrawer() {
     $(".drawer-overlay").toggleClass("open");
 }
 
+// Handle bottom sheet functionality
+function initBottomSheet() {
+    var bottomSheet = $(".bottom-sheet");
+    var handle = $(".bottom-sheet-handle");
+    var closeBtn = $(".bottom-sheet-close");
+    var startY, startHeight, isDragging = false;
+    var windowHeight = window.innerHeight;
+    var minHeight = 80; // Height of just the handle
+    var maxHeight = windowHeight * 0.8; // 80% of window height
+
+    // Initialize mobile column headers
+    $("#mobile-type-col").html($("#type_col").html());
+    $("#mobile-start-col").html($("#start_col").html());
+    $("#mobile-time-col").html($("#time_col").html());
+    $("#mobile-distance-col").html($("#distance_col").html());
+    $("#mobile-avg-speed-col").html($("#avg_speed_col").html());
+    $("#mobile-max-speed-col").html($("#max_speed_col").html());
+
+    // Initialize mobile timepicker
+    $("#mobile-btn-yesterday").html($("#btn-yesterday").html());
+    $("#mobile-btn-today").html($("#btn-today").html());
+    $("#mobile-btn-week").html($("#btn-week").html());
+    $("#mobile-btn-month").html($("#btn-month").html());
+
+    // Sync mobile events table with desktop
+    $("#mobile-events-descr").html($("#events_descr").html());
+
+    // Handle touch start on the handle
+    handle.on("touchstart", function(e) {
+        startY = e.originalEvent.touches[0].clientY;
+        startHeight = bottomSheet.height();
+        isDragging = true;
+        bottomSheet.addClass("dragging");
+        e.preventDefault();
+    });
+
+    // Handle touch move
+    $(document).on("touchmove", function(e) {
+        if (!isDragging) return;
+
+        var currentY = e.originalEvent.touches[0].clientY;
+        var deltaY = currentY - startY;
+        var newHeight = Math.max(minHeight, Math.min(maxHeight, startHeight - deltaY));
+
+        bottomSheet.css("height", newHeight + "px");
+
+        // If height is close to max, add expanded class
+        if (newHeight > maxHeight * 0.8) {
+            bottomSheet.addClass("expanded");
+        } else {
+            bottomSheet.removeClass("expanded");
+        }
+
+        // If height is close to min, collapse
+        if (newHeight < minHeight + 20) {
+            bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+        } else {
+            bottomSheet.css("transform", "translateY(0)");
+        }
+    });
+
+    // Handle touch end
+    $(document).on("touchend", function(e) {
+        if (!isDragging) return;
+
+        isDragging = false;
+        bottomSheet.removeClass("dragging");
+
+        var currentHeight = bottomSheet.height();
+
+        // Snap to expanded or collapsed state
+        if (currentHeight < windowHeight * 0.3) {
+            bottomSheet.removeClass("expanded");
+            bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+            bottomSheet.css("height", "70%"); // Reset to default height
+        } else {
+            bottomSheet.addClass("expanded");
+            bottomSheet.css("transform", "translateY(0)");
+        }
+    });
+
+    // Handle click on the handle to toggle expanded state
+    handle.on("click", function() {
+        if (!isDragging) {
+            bottomSheet.toggleClass("expanded");
+
+            if (bottomSheet.hasClass("expanded")) {
+                bottomSheet.css("transform", "translateY(0)");
+            } else {
+                bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+            }
+        }
+    });
+
+    // Handle close button
+    closeBtn.on("click", function() {
+        bottomSheet.removeClass("expanded");
+        bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+    });
+
+    // Sync events between desktop and mobile
+    function syncEvents() {
+        // Copy events from desktop to mobile
+        $("#mobile-events-tbl").html($("#events_tbl").html());
+
+        // Update mobile event handlers
+        $("#mobile-events-tbl .row-name-trip").on("click", getDetailedEvent);
+    }
+
+    // Sync timepicker selection
+    $(".timepicker td").on("click", function() {
+        var period = $(this).data("period");
+
+        // Update both desktop and mobile timepickers
+        $("#btn-yesterday, #btn-today, #btn-week, #btn-month").removeClass("active");
+        $("#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month").removeClass("active");
+
+        if (period === 0) {
+            $("#btn-yesterday, #mobile-btn-yesterday").addClass("active");
+        } else if (period === 1) {
+            $("#btn-today, #mobile-btn-today").addClass("active");
+        } else if (period === 2) {
+            $("#btn-week, #mobile-btn-week").addClass("active");
+        } else if (period === 3) {
+            $("#btn-month, #mobile-btn-month").addClass("active");
+        }
+    });
+
+    // Add event listener for events table updates
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                syncEvents();
+            }
+        });
+    });
+
+    // Start observing the events table
+    observer.observe(document.getElementById('events_tbl'), { childList: true });
+
+    // Initial sync
+    syncEvents();
+}
+
 // Resize window event
 function onResize() {
     var units_container = $("#units_container");
@@ -825,45 +1026,77 @@ function onResize() {
     var timePickerHeight = $("#timepicker").outerHeight(true);
     var headerHeight = $("#header").outerHeight(true);
     var mapContainer = $("#map_id");
+    var bottomSheet = $(".bottom-sheet");
 
     // Set drawer height
-    $("#drawer").css("height", windowHeight - headerHeight);
+    $("#drawer").css("height", windowHeight);
 
     // Different calculations for mobile vs desktop
     if (windowWidth <= 768) {
-        // Mobile layout - adjust heights for stacked layout
-        var leftColumnHeight = Math.floor(windowHeight * 0.4); // 40% for left column
-        var rightColumnHeight = Math.floor(windowHeight * 0.6); // 60% for map and timepicker
+        // Mobile layout - full screen map
+        $("#right_column").css({
+            "height": "100%",
+            "width": "100%",
+            "left": "0"
+        });
 
-        $("#left_column").css("height", leftColumnHeight);
-        $("#right_column").css("height", rightColumnHeight);
+        // Make map full height
+        mapContainer.css("height", "100%");
 
-        // Adjust map height to leave space for timepicker
-        mapContainer.css("height", rightColumnHeight - timePickerHeight);
-
-        // Set events container height
-        $("#events_container").css("height", leftColumnHeight - 10); // 10px for padding
+        // Hide desktop timepicker (it's in the bottom sheet now)
+        $("#timepicker").css("display", "none");
 
         // Set units container height in drawer
-        units_container.css("height", windowHeight - headerHeight - 50); // 50px for filter
+        units_container.css("height", windowHeight - 50); // 50px for filter
+
+        // Adjust bottom sheet
+        var minHeight = 40; // Height of just the handle
+        if (!bottomSheet.hasClass("expanded")) {
+            bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+        }
+
+        // Set mobile events container height
+        $("#mobile-events-container").css("height", "calc(100% - " + $("#mobile-timepicker").outerHeight(true) + "px)");
     } else {
         // Desktop layout
         $("#left_column").css("height", "100%");
-        $("#right_column").css("height", "100%");
+        $("#right_column").css({
+            "height": "100%",
+            "left": "40%",
+            "width": "auto"
+        });
 
         // Adjust map height to leave space for timepicker
         mapContainer.css("height", "calc(100% - " + timePickerHeight + "px)");
+
+        // Show desktop timepicker
+        $("#timepicker").css("display", "block");
 
         // Set events container height
         $("#events_container").css("height", "100%");
 
         // Set units container height in drawer
         units_container.css("height", windowHeight - headerHeight - 50); // 50px for filter
+
+        // Hide bottom sheet on desktop
+        bottomSheet.css("display", "none");
+    }
+}
+
+// Initialize mobile functionality
+function initMobile() {
+    // Initialize bottom sheet if on mobile
+    if ($(window).width() <= 768) {
+        initBottomSheet();
     }
 }
 
 $(document)
-    .ready(onLoad)
+    .ready(function() {
+        onLoad();
+        // Initialize mobile functionality after everything else is loaded
+        setTimeout(initMobile, 500);
+    })
     // center unit on map
     .on("click", ".row-name", getDetailedInfo)
     // draw trip on map
@@ -874,11 +1107,38 @@ $(document)
     .on("click", "#drawer-toggle", toggleDrawer)
     // search unit
     .on("keypress", "#units_filter", onSearch)
-    .on("keyup", "#units_filter", onSearchChange);
+    .on("keyup", "#units_filter", onSearchChange)
+    // Mobile timepicker
+    .on("click", "#mobile-timepicker td", updatePeriod);
 
 // Handle window resize and orientation change
-$(window).resize(onResize);
+$(window).resize(function() {
+    onResize();
+
+    // Re-initialize mobile functionality if switching to mobile view
+    if ($(window).width() <= 768) {
+        // Show bottom sheet
+        $(".bottom-sheet").css("display", "flex");
+
+        // Initialize bottom sheet if not already initialized
+        if (!$(".bottom-sheet").hasClass("initialized")) {
+            initBottomSheet();
+            $(".bottom-sheet").addClass("initialized");
+        }
+    } else {
+        // Hide bottom sheet on desktop
+        $(".bottom-sheet").css("display", "none");
+    }
+});
+
 window.addEventListener("orientationchange", function() {
     // Small delay to ensure the browser has completed the orientation change
-    setTimeout(onResize, 200);
+    setTimeout(function() {
+        onResize();
+
+        // Re-initialize mobile functionality
+        if ($(window).width() <= 768) {
+            initBottomSheet();
+        }
+    }, 200);
 });
