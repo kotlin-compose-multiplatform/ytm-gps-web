@@ -736,9 +736,7 @@ function login(data) {
         attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
     });
     map = L.map("map_id", {layers: [gurtam]}).setView([52.32728615559, 9.798388481140], 14);
-    L.control.zoom({
-        position: 'bottomright'
-    }).addTo(map);
+    map.zoomControl.setPosition('bottomright');
     L.control.layers({
         "YTM Maps": gurtam,
         "OpenStreetMap": osm
