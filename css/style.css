@@ -199,10 +199,10 @@ body {
 
   .bottom-sheet-close {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 36px;
-    height: 36px;
+    top: 5px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
     background: #f0f0f0;
     border-radius: 50%;
     display: flex;
