@@ -1107,6 +1107,23 @@ function toggleDrawer() {
     })
   }
 
+  // Create header with search and close button if it doesn't exist
+  if ($(".drawer-header").length === 0) {
+    // Move the existing search input into a new header
+    $("#units_filter").wrap('<div class="drawer-header"></div>')
+
+    // Add close button to header
+    $(".drawer-header").append(
+      '<button id="drawer-close" class="drawer-close" aria-label="Close drawer"></button>'
+    )
+
+    // Add click event to close drawer when close button is clicked
+    $("#drawer-close").on("click", function () {
+      $("#drawer").removeClass("open")
+      $(".drawer-overlay").removeClass("open")
+    })
+  }
+
   // Toggle overlay
   $(".drawer-overlay").toggleClass("open")
 }

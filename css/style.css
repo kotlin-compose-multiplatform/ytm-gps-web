@@ -714,3 +714,60 @@ a {
 #units_tbl {
   display: none;
 }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.drawer-close {
+  width: 36px;
+  height: 36px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.drawer-close:hover {
+  background: #e0e0e0;
+}
+
+.drawer-close:before,
+.drawer-close:after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background: #333;
+  transform-origin: center;
+}
+
+.drawer-close:before {
+  transform: rotate(45deg);
+}
+
+.drawer-close:after {
+  transform: rotate(-45deg);
+}
+
+#units_filter {
+  flex: 1;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.units-grid {
+  height: calc(100% - 56px);
+}
