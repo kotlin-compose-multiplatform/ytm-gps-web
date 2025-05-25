@@ -1,619 +1,628 @@
-html, body {
-     height: 100%;
-     margin: 0px;
-     font-family: Arial, Helvetica, sans-serif;
-     cursor: default;
-     overflow: hidden;
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: default;
+  overflow: hidden;
 }
 
 #page {
-    min-height: 100%;
+  min-height: 100%;
 }
 
 #header {
-    height: 48px;
-    width: 100%;
-    background: #FFF;
-    border-bottom: 2px solid #21344f;
-    color: rgb(0, 51, 102);
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    z-index: 1000;
+  height: 48px;
+  width: 100%;
+  background: #fff;
+  border-bottom: 2px solid #21344f;
+  color: rgb(0, 51, 102);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1000;
 }
 
 #header > * {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 #logo {
-    margin: 7px 5px 7px 15px;
-    height: 34px;
-    flex-shrink: 0;
+  margin: 7px 5px 7px 15px;
+  height: 34px;
+  flex-shrink: 0;
 }
 
 #app-name {
-    display: inline-block;
-    color: #473e3f;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: inline-block;
+  color: #473e3f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #user_info {
-    margin-left: auto;
-    margin-right: 13px;
-    color: #777;
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  margin-left: auto;
+  margin-right: 13px;
+  color: #777;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
-    #header {
-        font-size: 16px;
-        background: transparent;
-        border-bottom: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-    }
+  #header {
+    font-size: 16px;
+    border-bottom: none;
+    position: absolute;
+    background: transparent;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 60px;
+  }
 
-    #logo {
-        display: none;
-    }
+  #logo {
+    display: none;
+  }
 
-    #app-name {
-        display: none;
-    }
+  #app-name {
+    display: none;
+  }
 
-    #user_info {
-        font-size: 16px;
-        color: #fff;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-        margin-right: 20px;
-    }
+  #user_info {
+    font-size: 16px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    margin-right: 20px;
+  }
 }
 
 #content {
-    width: 100%;
-    position: absolute;
-    top: 50px;
-    bottom: 0px;
-    min-height: 100px;
-    height: auto;
-    overflow: hidden;
+  width: 100%;
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+  min-height: 100px;
+  height: auto;
+  overflow: hidden;
 }
 
 #left_column {
-	float: left;
-	height: 100%;
-	width: 40%;
-	max-width: 600px;
+  float: left;
+  height: 100%;
+  width: 40%;
+  max-width: 600px;
 }
 
 #right_column {
-	position: absolute;
-	left: 40%;
-	right: 0px;
-	width: auto;
-	height: 100%;
-	padding: 0px;
+  position: absolute;
+  left: 40%;
+  right: 0px;
+  width: auto;
+  height: 100%;
+  padding: 0px;
 }
 
 /* Media query for tablets */
 @media screen and (max-width: 1024px) {
-    #left_column {
-        width: 50%;
-    }
+  #left_column {
+    width: 50%;
+  }
 
-    #right_column {
-        left: 50%;
-    }
-}
-
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    #content {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow: hidden;
-    }
-
-    #left_column {
-        display: none; /* Initially hidden, shown in bottom sheet */
-    }
-
-    #right_column {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-    }
-
-    /* Bottom sheet for events and timepicker */
-    .bottom-sheet {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        z-index: 950;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-        transition: transform 0.3s ease;
-        transform: translateY(calc(100% - 80px));
-        height: 70%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Hide bottom sheet on desktop */
-    @media screen and (min-width: 769px) {
-        .bottom-sheet {
-            display: none;
-        }
-    }
-
-    .bottom-sheet.expanded {
-        transform: translateY(0);
-    }
-
-    .bottom-sheet-handle {
-        width: 40px;
-        height: 5px;
-        background: #ccc;
-        border-radius: 3px;
-        margin: 10px auto;
-        cursor: pointer;
-    }
-
-    .bottom-sheet-close {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 36px;
-        height: 36px;
-        background: #f0f0f0;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 960;
-    }
-
-    .bottom-sheet-close:before,
-    .bottom-sheet-close:after {
-        content: '';
-        position: absolute;
-        width: 15px;
-        height: 2px;
-        background: #333;
-    }
-
-    .bottom-sheet-close:before {
-        transform: rotate(45deg);
-    }
-
-    .bottom-sheet-close:after {
-        transform: rotate(-45deg);
-    }
-
-    .bottom-sheet-content {
-        flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        padding: 0 10px 10px 10px;
-    }
-
-    /* Make drawer toggle more visible on mobile */
-    #drawer-toggle {
-        top: 10px;
-        left: 10px;
-        background-color: rgba(33, 52, 79, 0.8);
-        z-index: 1001;
-    }
-}
-
-#map_id {
-	width: 100%;
-	height: 100%;
-}
-
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    #map_id {
-        min-height: 300px; /* Ensure map is visible on mobile */
-    }
-}
-
-.y-scroll-container{
-	height: 100%;
-	overflow-y: auto;
-	position: relative;
-	-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-a{
-	color: #21344f;
-	text-decoration: none;
-}
-
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    .y-scroll-container {
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    }
-}
-
-.tbl{
-	width: 100%;
-	background-color: #fff;
-	border-spacing: 0;
-	border-collapse: collapse;
-	font-size: 12px;
-	table-layout: fixed;
-}
-.tbl tr {
-    cursor: pointer;
-}
-.tbl tr.active {
-    background:#cfcfcf;
-}
-.tbl td{
-	padding: 3px;
-	border-bottom: 1px solid #d1ddea;
-	color: #21344f;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.tbl td[id^="unit_time"] {
-    white-space: nowrap;
-}
-
-.tbl th {
-	padding: 5px;
-	background-color: #21344f;
-	color: #ccc;
-	text-align: left;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    .tbl {
-        font-size: 14px;
-    }
-
-    .tbl td, .tbl th {
-        padding: 10px 5px;
-        height: 24px;
-    }
-
-    .tbl th {
-        font-weight: bold;
-        font-size: 15px;
-    }
-
-    /* Make table rows more tappable */
-    .tbl tr {
-        height: 44px;
-    }
-
-    /* Improve readability of active rows */
-    .tbl tr.active {
-        background: #21344f;
-        color: white;
-    }
-
-    .tbl tr.active td {
-        color: white;
-    }
+  #right_column {
+    left: 50%;
+  }
 }
 
 /* Drawer styles */
 #drawer-toggle {
-    position: fixed;
-    top: 60px;
-    left: 10px;
-    width: 40px;
-    height: 40px;
-    background-color: #21344f;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  top: 60px;
+  left: 10px;
+  width: 40px;
+  height: 40px;
+  background-color: #21344f;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#drawer-toggle span, 
-#drawer-toggle span:before, 
-#drawer-toggle span:after {
-    content: '';
-    display: block;
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    position: relative;
-}
-
-#drawer-toggle span:before {
-    top: -8px;
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+  #content {
     position: absolute;
-}
-
-#drawer-toggle span:after {
-    bottom: -8px;
-    position: absolute;
-}
-
-#drawer {
-    position: fixed;
-    top: 50px;
-    left: -300px;
-    width: 300px;
-    height: 100%;
-    background-color: white;
-    z-index: 999;
-    transition: left 0.3s ease;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-    overflow-y: auto;
-}
-
-#drawer.open {
-    left: 0;
-}
-
-.drawer-overlay {
-    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 998;
-    display: none;
-}
+    overflow: hidden;
+  }
 
-.drawer-overlay.open {
-    display: block;
-}
+  #left_column {
+    display: none; /* Initially hidden, shown in bottom sheet */
+  }
 
-/* Media query for mobile devices */
-@media screen and (max-width: 768px) {
-    #drawer {
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        z-index: 1002;
-    }
-
-    #drawer.open {
-        left: 0;
-    }
-}
-
-.timepicker {
+  #right_column {
     position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  /* Bottom sheet for events and timepicker */
+  .bottom-sheet {
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 900;
+    background: white;
+    z-index: 950;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    transform: translateY(calc(100% - 20px));
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Hide bottom sheet on desktop */
+  @media screen and (min-width: 769px) {
+    .bottom-sheet {
+      display: none;
+    }
+  }
+
+  .bottom-sheet.expanded {
+    transform: translateY(0);
+  }
+
+  .bottom-sheet-handle {
+    width: 40px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 3px;
+    margin: 10px auto;
+    cursor: pointer;
+  }
+
+  .bottom-sheet-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 960;
+  }
+
+  .bottom-sheet-close:before,
+  .bottom-sheet-close:after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 2px;
+    background: #333;
+  }
+
+  .bottom-sheet-close:before {
+    transform: rotate(45deg);
+  }
+
+  .bottom-sheet-close:after {
+    transform: rotate(-45deg);
+  }
+
+  .bottom-sheet-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px 10px 10px;
+  }
+
+  /* Make drawer toggle more visible on mobile */
+  #drawer-toggle {
+    top: 10px;
+    left: 10px;
+    background-color: rgba(33, 52, 79, 0.8);
+    z-index: 1001;
+  }
+}
+
+#map_id {
+  width: 100%;
+  height: 100%;
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+  #map_id {
+    min-height: 300px; /* Ensure map is visible on mobile */
+  }
+}
+
+.y-scroll-container {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+a {
+  color: #21344f;
+  text-decoration: none;
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+  .y-scroll-container {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+}
+
+.tbl {
+  width: 100%;
+  background-color: #fff;
+  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.tbl tr {
+  cursor: pointer;
+}
+.tbl tr.active {
+  background: #cfcfcf;
+}
+.tbl td {
+  padding: 3px;
+  border-bottom: 1px solid #d1ddea;
+  color: #21344f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tbl td[id^="unit_time"] {
+  white-space: nowrap;
+}
+
+.tbl th {
+  padding: 5px;
+  background-color: #21344f;
+  color: #ccc;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+  .tbl {
+    font-size: 14px;
+  }
+
+  .tbl td,
+  .tbl th {
+    padding: 10px 5px;
+    height: 24px;
+  }
+
+  .tbl th {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  /* Make table rows more tappable */
+  .tbl tr {
+    height: 44px;
+  }
+
+  /* Improve readability of active rows */
+  .tbl tr.active {
+    background: #21344f;
+    color: white;
+  }
+
+  .tbl tr.active td {
+    color: white;
+  }
+}
+
+#drawer-toggle span,
+#drawer-toggle span:before,
+#drawer-toggle span:after {
+  content: "";
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  position: relative;
+}
+
+#drawer-toggle span:before {
+  top: -8px;
+  position: absolute;
+}
+
+#drawer-toggle span:after {
+  bottom: -8px;
+  position: absolute;
+}
+
+#drawer {
+  position: fixed;
+  top: 50px;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background-color: white;
+  z-index: 999;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+}
+
+#drawer.open {
+  left: 0;
+}
+
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: none;
+}
+
+.drawer-overlay.open {
+  display: block;
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+  #drawer {
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    z-index: 1002;
+  }
+
+  #drawer.open {
+    left: 0;
+  }
+}
+
+.timepicker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
 }
 
 .timepicker .tbl {
-    background-color:#cfcfcf;
-    margin-bottom: 0;
+  background-color: #cfcfcf;
+  margin-bottom: 0;
 }
 
 .timepicker .tbl td {
-    padding: 5px;
-    text-align: center;
-    font-weight:bold;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .timepicker .tbl td.active {
-    background-color:#21344f;
-    color: #ccc;
+  background-color: #21344f;
+  color: #ccc;
 }
 
 .centered {
-	text-align: center;
+  text-align: center;
 }
 
 .shorten-container {
-	max-width: 160px;
+  max-width: 160px;
 }
 
 .shorten {
-	max-width: 160px;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+  max-width: 160px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 #icon_col {
-	min-width: 24px;
-	width: 24px;
+  min-width: 24px;
+  width: 24px;
 }
 
 #name_col {
-	width: 100%;
+  width: 100%;
 }
 
 #lmsg_col {
-	min-width: 110px;
-	width: 110px;
+  min-width: 110px;
+  width: 110px;
 }
 
 #speed_col {
-	min-width: 60px;
-	width: 60px;
+  min-width: 60px;
+  width: 60px;
 }
 
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
-    #icon_col {
-        min-width: 20px;
-        width: 20px;
-    }
+  #icon_col {
+    min-width: 20px;
+    width: 20px;
+  }
 
-    #lmsg_col {
-        min-width: 80px;
-        width: 80px;
-    }
+  #lmsg_col {
+    min-width: 80px;
+    width: 80px;
+  }
 
-    #speed_col {
-        min-width: 40px;
-        width: 40px;
-    }
+  #speed_col {
+    min-width: 40px;
+    width: 40px;
+  }
 
-    #type_col, #start_col, #time_col, #distance_col, #avg_speed_col, #max_speed_col {
-        min-width: 0;
-        width: auto;
-    }
+  #type_col,
+  #start_col,
+  #time_col,
+  #distance_col,
+  #avg_speed_col,
+  #max_speed_col {
+    min-width: 0;
+    width: auto;
+  }
 }
 
-.filter {}
+.filter {
+}
 
 .filter input {
-    display: inline-block;
-    padding: 9px 5px;
-    width: 95%;
-    background: #fff;
-    border: 0 none;
-    outline: 0;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+  display: inline-block;
+  padding: 9px 5px;
+  width: 95%;
+  background: #fff;
+  border: 0 none;
+  outline: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
-    .filter input {
-        padding: 12px 5px;
-        font-size: 16px; /* Prevents iOS zoom on focus */
-    }
+  .filter input {
+    padding: 12px 5px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
 }
 
 /*---------------------- Marker tooltip ------------------------------*/
 .olMarkerLabel {
-	font-family: Arial, Helvetica, sans-serif;
-	color: #21344f;
-	background-color: #fff;
-	width: auto;
-	padding: 2px 5px;
-	border: 1px #21344f solid;
-	z-index: 1000;
-	opacity: 0.8 !important;
-	text-align: center;
-	max-width: 300px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #21344f;
+  background-color: #fff;
+  width: auto;
+  padding: 2px 5px;
+  border: 1px #21344f solid;
+  z-index: 1000;
+  opacity: 0.8 !important;
+  text-align: center;
+  max-width: 300px;
 }
 
 .leaflet-popup-tip-container {
-    display: none;
+  display: none;
 }
 
 .leaflet-popup-content-wrapper {
-    background: none transparent;
-    box-shadow: none;
-    padding: 0;
-    text-align: inherit;
-    border-radius: 0;
+  background: none transparent;
+  box-shadow: none;
+  padding: 0;
+  text-align: inherit;
+  border-radius: 0;
 }
 
 .leaflet-popup-content {
-    margin: 0;
-    width: auto !important;
-    line-height: inherit;
+  margin: 0;
+  width: auto !important;
+  line-height: inherit;
 }
 
 /* Map type control styling */
 .map-type-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  color: #333;
 }
 
 .leaflet-control-layers {
-    border-radius: 4px;
-    background-color: white;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    margin-bottom: 40px !important;
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  margin-bottom: 40px !important;
 }
 
 .leaflet-control-zoom {
-    margin-bottom: 40px !important;
+  margin-bottom: 40px !important;
 }
 
 .leaflet-control-layers-toggle {
-    width: 36px;
-    height: 36px;
-    background-size: 20px 20px;
+  width: 36px;
+  height: 36px;
+  background-size: 20px 20px;
 }
 
 /* Media query for mobile devices */
 @media screen and (max-width: 768px) {
-    .olMarkerLabel {
-        max-width: 200px;
-        font-size: 12px;
-        padding: 4px 8px;
-    }
+  .olMarkerLabel {
+    max-width: 200px;
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 
-    .label-title {
-        font-size: 13px;
-    }
+  .label-title {
+    font-size: 13px;
+  }
 
-    .olMarkerLabel table td {
-        font-size: 12px;
-        padding: 2px;
-    }
+  .olMarkerLabel table td {
+    font-size: 12px;
+    padding: 2px;
+  }
 
-    .map-type-icon {
-        padding: 8px;
-    }
+  .map-type-icon {
+    padding: 8px;
+  }
 
-    .leaflet-control-layers {
-        margin-bottom: 40px !important;
-    }
+  .leaflet-control-layers {
+    margin-bottom: 40px !important;
+  }
 
-    .leaflet-control-zoom {
-        margin-bottom: 40px !important;
-    }
+  .leaflet-control-zoom {
+    margin-bottom: 40px !important;
+  }
 }
 
 .label-title {
-	font-size: 11px;
-	font-weight: bold;
-	white-space: nowrap;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
-.olMarkerLabel table{
-	border-spacing: 0;
-	border-collapse: collapse;
-	text-align: left;
+.olMarkerLabel table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  text-align: left;
 }
 
-.olMarkerLabel table td{
-	font-size: 11px;
-	padding: 0px;
-	white-space: nowrap;
+.olMarkerLabel table td {
+  font-size: 11px;
+  padding: 0px;
+  white-space: nowrap;
 }
