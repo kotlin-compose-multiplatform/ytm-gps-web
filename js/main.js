@@ -69,8 +69,15 @@ function showUnits() {
     } else {
       return -1
     }
-    return 0
   })
+
+  // Create container for cards if it doesn't exist
+  if (!$("#units_grid").length) {
+    $("#units_container").append(
+      '<div id="units_grid" class="units-grid"></div>'
+    )
+  }
+
   var bounds = []
   for (
     var i = 0, data = null, unit = null, html = "", len = units.length;
@@ -164,8 +171,38 @@ function showUnits() {
         newer: true,
       }
     }
-    // Generate output table html
+
+    // Generate card html
     html =
+      '<div class="unit-card" id="unit_card_' +
+      unit.id +
+      '" data-id="' +
+      unit.id +
+      '">' +
+      '<div class="unit-card-header">' +
+      '<img src="' +
+      data.icon +
+      '" class="unit-card-icon" alt="Unit icon">' +
+      '<div class="unit-card-name">' +
+      data.name +
+      "</div>" +
+      "</div>" +
+      '<div class="unit-card-details">' +
+      '<span id="unit_time_' +
+      unit.id +
+      '">' +
+      data.tm +
+      "</span>" +
+      '<span id="unit_speed_' +
+      unit.id +
+      '">' +
+      data.speed +
+      "</span>" +
+      "</div>" +
+      "</div>"
+
+    // Also generate table row for compatibility (hidden)
+    var tableHtml =
       "<tr id='unit_row_" +
       unit.id +
       "' class='row-name' data-id='" +
@@ -192,30 +229,48 @@ function showUnits() {
       data.speed +
       "</td>" +
       "</tr>"
-    $("#units_tbl").append(html)
+
+    $("#units_grid").append(html)
+    $("#units_tbl").append(tableHtml)
   }
+
+  // Add click handler for cards
+  $(".unit-card")
+    .off("click")
+    .on("click", function (e) {
+      $(".unit-card").removeClass("active")
+      $(this).addClass("active")
+
+      // Trigger the same behavior as table row click
+      var unitId = $(this).data("id")
+      var tableRow = $("#unit_row_" + unitId)
+      getDetailedInfo({ currentTarget: tableRow[0] })
+
+      // On mobile, expand the bottom sheet
+      if ($(window).width() <= 768) {
+        $(".bottom-sheet").addClass("expanded")
+        $(".bottom-sheet").css("transform", "translateY(0)")
+      }
+    })
 }
 
 // Position changed event handler
 function handleChange(e) {
-  // get unit from session
   var unit = sess.getItem(e.i)
-  if (!unit) {
-    return false
-  }
-  // get event type
+  if (!unit) return false
+
   var type = e.type
-  // get data from evt
   var changed = e.d
   var data = getUnitData(unit.id)
   var marker = null
+
   if (type === "itemChanged") {
-    // changed name
     if (changed.nm) {
+      $("#unit_card_" + unit.id + " .unit-card-name").html(data.name)
       $("#unit_name_" + unit.id + " div").html(data.name)
     }
-    // changed icon
     if (changed.uri) {
+      $("#unit_card_" + unit.id + " .unit-card-icon").attr("src", data.icon)
       $("#unit_img_" + unit.id + " img").attr("src", data.icon)
       if (unit.id in unitsData) {
         marker = unitsData[unit.id].marker
@@ -231,11 +286,8 @@ function handleChange(e) {
     $("#unit_speed_" + unit.id).html(data.speed)
     if (unit.id in unitsData) {
       marker = unitsData[unit.id].marker
-      // move marker
       marker.setLatLng({ lat: data.pos[0], lng: data.pos[1] })
-      // add point to tail
       unitsData[unit.id].tail.addLatLng({ lat: data.pos[0], lng: data.pos[1] })
-      // remove oldest point if tail too long
       if (unitsData[unit.id].tail.getLatLngs().length > 10) {
         unitsData[unit.id].tail.spliceLatLngs(0, 1)
       }
@@ -248,35 +300,16 @@ function handleChange(e) {
 
 // Search necessary unit
 function onSearch() {
-  // we'll wait 500ms and call search function
   delay(function () {
-    // get all units list
-    var units = sess.getItems("avl_unit")
-    // get entered value
-    var string = $("#units_filter").val()
-    string = string.trim().toString().toLowerCase()
-    units = units
-      .filter(function (unit) {
-        // Check if it is not null
-        if (!unit) {
-          return false
-        }
-        if (
-          !string.length ||
-          unit.nm.toString().toLowerCase().indexOf(string) !== -1
-        ) {
-          return false
-        }
-        return true
-      })
-      .map(function (unit) {
-        return unit.id
-      })
-    // show all units
-    $("[id^='unit_row_']").show()
-    // hide units in witch we can't find necessary string
-    units.forEach(function (id) {
-      $("#unit_row_" + id).hide()
+    var string = $("#units_filter").val().trim().toLowerCase()
+
+    $(".unit-card").each(function () {
+      var unitName = $(this).find(".unit-card-name").text().toLowerCase()
+      if (!string.length || unitName.indexOf(string) !== -1) {
+        $(this).show()
+      } else {
+        $(this).hide()
+      }
     })
   }, 500)
 }
