@@ -573,7 +573,10 @@ a {
 }
 
 .leaflet-control-zoom {
-  margin-bottom: 40px !important;
+  position: fixed !important;
+  top: 165px !important;
+  right: 16px !important; /* 20px - 4px */
+  margin: 0 !important;
 }
 
 .leaflet-control-layers-toggle {
@@ -604,15 +607,12 @@ a {
   }
 
   .leaflet-control-layers {
-    margin-bottom: 40px !important;
+    top: 65px !important;
   }
 
   .leaflet-control-zoom {
-    margin-bottom: 40px !important;
-  }
-
-  .leaflet-control-layers {
-    top: 65px !important;
+    top: 165px !important;
+    right: 16px !important;
   }
 }
 
