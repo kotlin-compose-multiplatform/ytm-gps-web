@@ -566,7 +566,10 @@ a {
   border-radius: 4px;
   background-color: white;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
-  margin-bottom: 40px !important;
+  position: fixed !important;
+  top: 65px !important;
+  right: 10px !important;
+  margin: 0 !important;
 }
 
 .leaflet-control-zoom {
@@ -606,6 +609,10 @@ a {
 
   .leaflet-control-zoom {
     margin-bottom: 40px !important;
+  }
+
+  .leaflet-control-layers {
+    top: 65px !important;
   }
 }
 
