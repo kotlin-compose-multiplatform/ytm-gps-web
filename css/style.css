@@ -574,8 +574,8 @@ a {
 
 .leaflet-control-zoom {
   position: fixed !important;
-  top: 165px !important;
-  right: 16px !important; /* 20px - 4px */
+  top: 185px !important; /* 65px + ~40px(layer control height) + 80px gap */
+  right: 16px !important;
   margin: 0 !important;
 }
 
@@ -611,8 +611,7 @@ a {
   }
 
   .leaflet-control-zoom {
-    top: 165px !important;
-    right: 16px !important;
+    top: 185px !important;
   }
 }
 
