@@ -1028,15 +1028,16 @@ function login(data) {
   // Add custom class to the control for styling
   layersControl.addTo(map)
 
-  // Add map icon to the layers control
+  // Add map icon directly to the toggle button instead of as a separate element
   setTimeout(function () {
-    var layersElement = document.querySelector(".leaflet-control-layers")
-    if (layersElement) {
-      var icon = document.createElement("div")
-      icon.className = "map-type-icon"
-      icon.innerHTML =
+    var toggleButton = document.querySelector(".leaflet-control-layers-toggle")
+    if (toggleButton) {
+      // Add the SVG icon directly to the toggle button's background
+      toggleButton.innerHTML =
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>'
-      layersElement.insertBefore(icon, layersElement.firstChild)
+
+      // Add a class to the toggle button for additional styling if needed
+      toggleButton.classList.add("map-type-toggle-with-icon")
     }
   }, 100)
   // try to define user locale

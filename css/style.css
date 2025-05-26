@@ -616,14 +616,6 @@ a {
 }
 
 /* Map type control styling */
-.map-type-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px;
-  color: #333;
-}
-
 .leaflet-control-layers {
   border-radius: 4px;
   background-color: white;
@@ -636,7 +628,7 @@ a {
 
 .leaflet-control-zoom {
   position: fixed !important;
-  top: 185px !important; /* 65px + ~40px(layer control height) + 80px gap */
+  top: 125px !important; /* Reduced gap since we no longer have the extra height */
   right: 16px !important;
   margin: 0 !important;
 }
@@ -644,7 +636,17 @@ a {
 .leaflet-control-layers-toggle {
   width: 36px;
   height: 36px;
-  background-size: 20px 20px;
+  background-image: none !important; /* Remove default background image */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.map-type-toggle-with-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #333;
 }
 
 /* Media query for mobile devices */
@@ -664,16 +666,17 @@ a {
     padding: 2px;
   }
 
-  .map-type-icon {
-    padding: 8px;
-  }
-
   .leaflet-control-layers {
     top: 65px !important;
   }
 
   .leaflet-control-zoom {
-    top: 185px !important;
+    top: 125px !important;
+  }
+
+  .map-type-toggle-with-icon svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
