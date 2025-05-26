@@ -994,12 +994,12 @@ function login(data) {
   // show user name
   $("#user_name_id").html(user.nm)
   // create a map in the "map" div
-  var google = L.tileLayer(
-    "http://mt1.google.com/vt/lyrs=y&x={x}&y={y}43&z={z}",
-    {
-      attribution: "&copy; Google Maps",
-    }
-  )
+  // var google = L.tileLayer(
+  //   "http://mt1.google.com/vt/lyrs=y&x={x}&y={y}43&z={z}",
+  //   {
+  //     attribution: "&copy; Google Maps",
+  //   }
+  // )
   var gurtam = L.tileLayer.webGis(sess.getBaseGisUrl(), {
     attribution: "&copy; YTM Maps",
     minZoom: 4,
@@ -1009,7 +1009,7 @@ function login(data) {
     attribution:
       "&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors",
   })
-  map = L.map("map_id", { layers: [google] }).setView(
+  map = L.map("map_id", { layers: [gurtam] }).setView(
     [37.9600766, 58.3260629],
     14
   )
@@ -1018,7 +1018,6 @@ function login(data) {
   // Create custom layer control with icon
   var layersControl = L.control.layers(
     {
-      "Google maps": google,
       "YTM Maps": gurtam,
       OpenStreetMap: osm,
     },
@@ -1154,7 +1153,7 @@ function initBottomSheet() {
     lastTouchTime = 0,
     lastTouchY = 0
   var windowHeight = window.innerHeight
-  var minHeight = 80 // Height of just the handle
+  var minHeight = 120 // Height of collapsed header
   var maxHeight = windowHeight * 0.8 // 80% of window height
   var snapThreshold = windowHeight * 0.3 // Threshold for snapping
 
@@ -1283,19 +1282,12 @@ function initBottomSheet() {
     }
   })
 
-  // Handle click on the handle to toggle expanded state
+  // Handle click on the handle to expand the sheet
   handle.on("click", function () {
     if (!isDragging) {
-      bottomSheet.toggleClass("expanded")
-
-      if (bottomSheet.hasClass("expanded")) {
-        bottomSheet.css("transform", "translateY(0)")
-      } else {
-        bottomSheet.css(
-          "transform",
-          "translateY(calc(100% - " + minHeight + "px))"
-        )
-      }
+      // Only expand the sheet when clicking the handle, don't collapse
+      bottomSheet.addClass("expanded")
+      bottomSheet.css("transform", "translateY(0)")
     }
   })
 
@@ -1383,7 +1375,7 @@ function onResize() {
     units_container.css("height", windowHeight - 50) // 50px for filter
 
     // Adjust bottom sheet
-    var minHeight = 40 // Height of just the handle
+    var minHeight = 120 // Height of collapsed header
     if (!bottomSheet.hasClass("expanded")) {
       bottomSheet.css(
         "transform",
