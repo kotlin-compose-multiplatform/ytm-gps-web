@@ -315,12 +315,18 @@ a {
 @media screen and (max-width: 768px) {
   .tbl {
     font-size: 14px;
+    width: 700px;
   }
 
   .tbl td,
   .tbl th {
     padding: 10px 5px;
     height: 24px;
+    text-overflow: unset;
+  }
+
+  .timepicker .tbl {
+    max-width: 400px !important;
   }
 
   .tbl th {
