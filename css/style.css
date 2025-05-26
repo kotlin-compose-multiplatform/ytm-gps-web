@@ -1,3 +1,46 @@
+:root {
+  /* Primary color as requested */
+  --primary-color: #05823C;
+  --text-color: #333;
+  --background-color: #fff;
+  --secondary-background: #f5f5f5;
+  --border-color: #d1ddea;
+  --header-text-color: #ccc;
+  --active-row-bg: #cfcfcf;
+  --drawer-toggle-bg: var(--primary-color);
+  --drawer-toggle-color: white;
+  --bottom-sheet-bg: white;
+  --bottom-sheet-handle-bg: #ccc;
+  --timepicker-bg: #cfcfcf;
+  --timepicker-active-bg: var(--primary-color);
+  --timepicker-active-color: #ccc;
+  --unit-card-active-bg: var(--primary-color);
+  --unit-card-active-color: white;
+  --unit-card-details-color: #666;
+  --unit-card-active-details-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark theme */
+:root[data-theme="dark"] {
+  --text-color: #f0f0f0;
+  --background-color: #121212;
+  --secondary-background: #1e1e1e;
+  --border-color: #333;
+  --header-text-color: #e0e0e0;
+  --active-row-bg: #333;
+  --drawer-toggle-bg: var(--primary-color);
+  --drawer-toggle-color: white;
+  --bottom-sheet-bg: #1e1e1e;
+  --bottom-sheet-handle-bg: #555;
+  --timepicker-bg: #333;
+  --timepicker-active-bg: var(--primary-color);
+  --timepicker-active-color: #e0e0e0;
+  --unit-card-active-bg: var(--primary-color);
+  --unit-card-active-color: white;
+  --unit-card-details-color: #aaa;
+  --unit-card-active-details-color: rgba(255, 255, 255, 0.8);
+}
+
 html,
 body {
   height: 100%;
@@ -5,6 +48,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   cursor: default;
   overflow: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 #page {
@@ -14,9 +59,9 @@ body {
 #header {
   height: 48px;
   width: 100%;
-  background: #fff;
-  border-bottom: 2px solid #21344f;
-  color: rgb(0, 51, 102);
+  background: var(--background-color);
+  border-bottom: 2px solid var(--primary-color);
+  color: var(--text-color);
   font-size: 20px;
   display: flex;
   align-items: center;
@@ -126,7 +171,7 @@ body {
   left: 10px;
   width: 40px;
   height: 40px;
-  background-color: #21344f;
+  background-color: var(--drawer-toggle-bg);
   border-radius: 5px;
   cursor: pointer;
   z-index: 1000;
@@ -165,7 +210,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: white;
+    background: var(--bottom-sheet-bg);
     z-index: 950;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -188,13 +233,19 @@ body {
     transform: translateY(0);
   }
 
+  .bottom-sheet.dragging {
+    transition: none; /* Disable transition during dragging for more responsive feel */
+    will-change: transform; /* Optimize for animations */
+  }
+
   .bottom-sheet-handle {
-    width: 40px;
-    height: 5px;
-    background: #ccc;
+    width: 60px; /* Wider handle for easier dragging */
+    height: 6px; /* Slightly thicker for better visibility */
+    background: var(--bottom-sheet-handle-bg);
     border-radius: 3px;
     margin: 10px auto;
     cursor: pointer;
+    touch-action: none; /* Improve touch handling */
   }
 
   .bottom-sheet-close {
@@ -203,7 +254,7 @@ body {
     right: 10px;
     width: 30px;
     height: 30px;
-    background: #f0f0f0;
+    background: var(--secondary-background);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -218,7 +269,7 @@ body {
     position: absolute;
     width: 15px;
     height: 2px;
-    background: #333;
+    background: var(--text-color);
   }
 
   .bottom-sheet-close:before {
@@ -279,7 +330,7 @@ a {
 
 .tbl {
   width: 100%;
-  background-color: #fff;
+  background-color: var(--background-color);
   border-spacing: 0;
   border-collapse: collapse;
   font-size: 12px;
@@ -289,12 +340,12 @@ a {
   cursor: pointer;
 }
 .tbl tr.active {
-  background: #cfcfcf;
+  background: var(--active-row-bg);
 }
 .tbl td {
   padding: 3px;
-  border-bottom: 1px solid #d1ddea;
-  color: #21344f;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -304,8 +355,8 @@ a {
 
 .tbl th {
   padding: 5px;
-  background-color: #21344f;
-  color: #ccc;
+  background-color: var(--primary-color);
+  color: var(--header-text-color);
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -427,7 +478,7 @@ a {
 }
 
 .timepicker .tbl {
-  background-color: #cfcfcf;
+  background-color: var(--timepicker-bg);
   margin-bottom: 0;
 }
 
@@ -438,8 +489,8 @@ a {
 }
 
 .timepicker .tbl td.active {
-  background-color: #21344f;
-  color: #ccc;
+  background-color: var(--timepicker-active-bg);
+  color: var(--timepicker-active-color);
 }
 
 .centered {
@@ -640,7 +691,7 @@ a {
 }
 
 .unit-card {
-  background: white;
+  background: var(--background-color);
   border-radius: 8px;
   padding: 12px;
   margin: 10px;
@@ -655,8 +706,8 @@ a {
 }
 
 .unit-card.active {
-  background: #21344f;
-  color: white;
+  background: var(--unit-card-active-bg);
+  color: var(--unit-card-active-color);
 }
 
 .unit-card-header {
@@ -685,11 +736,11 @@ a {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #666;
+  color: var(--unit-card-details-color);
 }
 
 .unit-card.active .unit-card-details {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--unit-card-active-details-color);
 }
 
 .units-grid {

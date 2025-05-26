@@ -866,7 +866,7 @@ function getTripInfo(trip, unit) {
   return result
 }
 
-// Fetch varable from 'GET' request
+// Fetch variable from 'GET' request
 function getHtmlVar(name) {
   if (!name) {
     return null
@@ -880,6 +880,16 @@ function getHtmlVar(name) {
     }
   }
   return null
+}
+
+// Apply theme based on URL parameter
+function applyTheme() {
+  var theme = getHtmlVar("theme")
+  if (theme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark")
+  } else {
+    document.documentElement.removeAttribute("data-theme")
+  }
 }
 
 // Get today
@@ -1076,6 +1086,9 @@ function removeAdds() {
 
 // We are ready now
 function onLoad() {
+  // Apply theme based on URL parameter
+  applyTheme()
+
   // load translations - default to Russian
   var lang = getHtmlVar("lang") || "ru"
   if (["en", "ru"].indexOf(lang) == -1) {
@@ -1132,13 +1145,18 @@ function toggleDrawer() {
 function initBottomSheet() {
   var bottomSheet = $(".bottom-sheet")
   var handle = $(".bottom-sheet-handle")
+  var content = $(".bottom-sheet-content")
   var closeBtn = $(".bottom-sheet-close")
   var startY,
     startHeight,
-    isDragging = false
+    startTransform,
+    isDragging = false,
+    lastTouchTime = 0,
+    lastTouchY = 0
   var windowHeight = window.innerHeight
   var minHeight = 80 // Height of just the handle
   var maxHeight = windowHeight * 0.8 // 80% of window height
+  var snapThreshold = windowHeight * 0.3 // Threshold for snapping
 
   // Initialize mobile column headers
   $("#mobile-type-col").html($("#type_col").html())
@@ -1157,66 +1175,111 @@ function initBottomSheet() {
   // Sync mobile events table with desktop
   $("#mobile-events-descr").html($("#events_descr").html())
 
-  // Handle touch start on the handle
-  handle.on("touchstart", function (e) {
-    startY = e.originalEvent.touches[0].clientY
-    startHeight = bottomSheet.height()
-    isDragging = true
-    bottomSheet.addClass("dragging")
-    e.preventDefault()
-  })
+  // Function to get current transform value
+  function getTransformValue() {
+    var transform = bottomSheet.css("transform");
+    if (transform === "none") return 0;
+
+    var matrix = transform.match(/matrix\((.+)\)/);
+    if (matrix) {
+      var values = matrix[1].split(', ');
+      return parseInt(values[5]) || 0;
+    }
+    return 0;
+  }
+
+  // Function to set sheet position
+  function setSheetPosition(position) {
+    bottomSheet.css("transform", "translateY(" + position + "px)");
+  }
+
+  // Function to expand the sheet
+  function expandSheet() {
+    bottomSheet.addClass("expanded");
+    setSheetPosition(0);
+  }
+
+  // Function to collapse the sheet
+  function collapseSheet() {
+    bottomSheet.removeClass("expanded");
+    setSheetPosition(windowHeight - minHeight);
+    bottomSheet.css("height", "70%"); // Reset to default height
+  }
+
+  // Handle touch start on the handle or content
+  handle.on("touchstart", handleTouchStart);
+  content.on("touchstart", function(e) {
+    // Only handle touch start if we're touching near the top of the content
+    if (e.originalEvent.touches[0].clientY - content.offset().top < 50) {
+      handleTouchStart(e);
+    }
+  });
+
+  function handleTouchStart(e) {
+    startY = e.originalEvent.touches[0].clientY;
+    startHeight = bottomSheet.height();
+    startTransform = getTransformValue();
+    isDragging = true;
+    bottomSheet.addClass("dragging");
+
+    // Detect double tap
+    var now = new Date().getTime();
+    var timeSince = now - lastTouchTime;
+    var touchY = e.originalEvent.touches[0].clientY;
+    var yDiff = Math.abs(touchY - lastTouchY);
+
+    if (timeSince < 300 && yDiff < 20) {
+      // Double tap detected
+      if (bottomSheet.hasClass("expanded")) {
+        collapseSheet();
+      } else {
+        expandSheet();
+      }
+      isDragging = false;
+      bottomSheet.removeClass("dragging");
+    }
+
+    lastTouchTime = now;
+    lastTouchY = touchY;
+
+    e.preventDefault();
+  }
 
   // Handle touch move
   $(document).on("touchmove", function (e) {
-    if (!isDragging) return
+    if (!isDragging) return;
 
-    var currentY = e.originalEvent.touches[0].clientY
-    var deltaY = currentY - startY
-    var newHeight = Math.max(
-      minHeight,
-      Math.min(maxHeight, startHeight - deltaY)
-    )
+    var currentY = e.originalEvent.touches[0].clientY;
+    var deltaY = currentY - startY;
 
-    bottomSheet.css("height", newHeight + "px")
+    // Calculate new position
+    var newTransform = Math.max(0, Math.min(windowHeight - minHeight, startTransform + deltaY));
 
-    // If height is close to max, add expanded class
-    if (newHeight > maxHeight * 0.8) {
-      bottomSheet.addClass("expanded")
+    // Apply the transform
+    setSheetPosition(newTransform);
+
+    // Update expanded state based on position
+    if (newTransform < (windowHeight - minHeight) / 2) {
+      bottomSheet.addClass("expanded");
     } else {
-      bottomSheet.removeClass("expanded")
+      bottomSheet.removeClass("expanded");
     }
-
-    // If height is close to min, collapse
-    if (newHeight < minHeight + 20) {
-      bottomSheet.css(
-        "transform",
-        "translateY(calc(100% - " + minHeight + "px))"
-      )
-    } else {
-      bottomSheet.css("transform", "translateY(0)")
-    }
-  })
+  });
 
   // Handle touch end
-  $(document).on("touchend", function (e) {
-    if (!isDragging) return
+  $(document).on("touchend touchcancel", function (e) {
+    if (!isDragging) return;
 
-    isDragging = false
-    bottomSheet.removeClass("dragging")
+    isDragging = false;
+    bottomSheet.removeClass("dragging");
 
-    var currentHeight = bottomSheet.height()
+    var currentTransform = getTransformValue();
 
     // Snap to expanded or collapsed state
-    if (currentHeight < windowHeight * 0.3) {
-      bottomSheet.removeClass("expanded")
-      bottomSheet.css(
-        "transform",
-        "translateY(calc(100% - " + minHeight + "px))"
-      )
-      bottomSheet.css("height", "70%") // Reset to default height
+    if (currentTransform > snapThreshold) {
+      collapseSheet();
     } else {
-      bottomSheet.addClass("expanded")
-      bottomSheet.css("transform", "translateY(0)")
+      expandSheet();
     }
   })
 
