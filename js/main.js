@@ -1000,7 +1000,7 @@ function login(data) {
   //     attribution: "&copy; Google Maps",
   //   }
   // )
-  var gurtam = L.tileLayer.webGis(sess.getBaseGisUrl().startsWith("https")? sess.getBaseGisUrl() : sess.getBaseGisUrl().replace("http", "https"), {
+  var gurtam = L.tileLayer.webGis(sess.getBaseGisUrl(), {
     attribution: "&copy; YTM Maps",
     minZoom: 4,
     userId: user.id,

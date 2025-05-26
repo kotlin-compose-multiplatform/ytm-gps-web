@@ -1,5 +1,6 @@
 /* required styles */
 
+
 .leaflet-pane,
 .leaflet-tile,
 .leaflet-marker-icon,
@@ -659,3 +660,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 		print-color-adjust: exact;
 		}
 	}
+
+.leaflet-marker-icon {
+	object-fit: contain !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
