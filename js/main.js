@@ -1143,37 +1143,58 @@ function toggleDrawer() {
 
 // Handle bottom sheet functionality
 function initBottomSheet() {
-  var bottomSheet = $(".bottom-sheet")
-  var handle = $(".bottom-sheet-handle")
-  var content = $(".bottom-sheet-content")
-  var closeBtn = $(".bottom-sheet-close")
+  // Check if bottom sheet elements exist
+  if ($(".bottom-sheet").length === 0) {
+    console.warn("Bottom sheet not found, initialization skipped");
+    return;
+  }
+
+  var bottomSheet = $(".bottom-sheet");
+  var handle = $(".bottom-sheet-handle");
+  var content = $(".bottom-sheet-content");
+  var closeBtn = $(".bottom-sheet-close");
+
+  // Verify all required elements exist
+  if (handle.length === 0 || content.length === 0 || closeBtn.length === 0) {
+    console.warn("Bottom sheet components missing, initialization may be incomplete");
+  }
+
   var startY,
     startHeight,
     startTransform,
     isDragging = false,
     lastTouchTime = 0,
-    lastTouchY = 0
-  var windowHeight = window.innerHeight
-  var minHeight = 120 // Height of collapsed header
-  var maxHeight = windowHeight * 0.8 // 80% of window height
-  var snapThreshold = windowHeight * 0.3 // Threshold for snapping
+    lastTouchY = 0;
+  var windowHeight = window.innerHeight;
+  var minHeight = 120; // Height of collapsed header
+  var maxHeight = windowHeight * 0.8; // 80% of window height
+  var snapThreshold = windowHeight * 0.3; // Threshold for snapping
+
+  // Safely initialize mobile column headers
+  function safeUpdateElement(target, source) {
+    var $target = $(target);
+    var $source = $(source);
+    if ($target.length && $source.length) {
+      $target.html($source.html());
+    }
+  }
 
   // Initialize mobile column headers
-  $("#mobile-type-col").html($("#type_col").html())
-  $("#mobile-start-col").html($("#start_col").html())
-  $("#mobile-time-col").html($("#time_col").html())
-  $("#mobile-distance-col").html($("#distance_col").html())
-  $("#mobile-avg-speed-col").html($("#avg_speed_col").html())
-  $("#mobile-max-speed-col").html($("#max_speed_col").html())
+  safeUpdateElement("#mobile-type-col", "#type_col");
+  safeUpdateElement("#mobile-start-col", "#start_col");
+  safeUpdateElement("#mobile-time-col", "#time_col");
+  safeUpdateElement("#mobile-distance-col", "#distance_col");
+  safeUpdateElement("#mobile-avg-speed-col", "#avg_speed_col");
+  safeUpdateElement("#mobile-max-speed-col", "#max_speed_col");
 
   // Initialize mobile timepicker
-  $("#mobile-btn-yesterday").html($("#btn-yesterday").html())
-  $("#mobile-btn-today").html($("#btn-today").html())
-  $("#mobile-btn-week").html($("#btn-week").html())
-  $("#mobile-btn-month").html($("#btn-month").html())
+  safeUpdateElement("#mobile-btn-yesterday", "#btn-yesterday");
+  safeUpdateElement("#mobile-btn-today", "#btn-today");
+  safeUpdateElement("#mobile-btn-week", "#btn-week");
+  safeUpdateElement("#mobile-btn-month", "#btn-month");
 
   // Sync mobile events table with desktop
-  $("#mobile-events-descr").html($("#events_descr").html())
+  safeUpdateElement("#mobile-events-descr", "#events_descr");
 
   // Function to get current transform value
   function getTransformValue() {
@@ -1207,15 +1228,27 @@ function initBottomSheet() {
   }
 
   // Handle touch start on the handle or content
-  handle.on("touchstart", handleTouchStart);
-  content.on("touchstart", function(e) {
-    // Only handle touch start if we're touching near the top of the content
-    if (e.originalEvent.touches[0].clientY - content.offset().top < 50) {
-      handleTouchStart(e);
-    }
-  });
+  if (handle.length) {
+    handle.on("touchstart", handleTouchStart);
+  }
+
+  if (content.length) {
+    content.on("touchstart", function(e) {
+      // Only handle touch start if we're touching near the top of the content
+      if (e.originalEvent.touches && e.originalEvent.touches[0] && 
+          content.offset() && e.originalEvent.touches[0].clientY - content.offset().top < 50) {
+        handleTouchStart(e);
+      }
+    });
+  }
 
   function handleTouchStart(e) {
+    // Ensure we have valid touch event data
+    if (!e || !e.originalEvent || !e.originalEvent.touches || !e.originalEvent.touches[0]) {
+      console.warn("Invalid touch event in handleTouchStart");
+      return;
+    }
+
     startY = e.originalEvent.touches[0].clientY;
     startHeight = bottomSheet.height();
     startTransform = getTransformValue();
@@ -1242,12 +1275,22 @@ function initBottomSheet() {
     lastTouchTime = now;
     lastTouchY = touchY;
 
-    e.preventDefault();
+    try {
+      e.preventDefault();
+    } catch (err) {
+      console.warn("Error preventing default touch behavior:", err);
+    }
   }
 
   // Handle touch move
   $(document).on("touchmove", function (e) {
     if (!isDragging) return;
+
+    // Ensure we have valid touch event data
+    if (!e || !e.originalEvent || !e.originalEvent.touches || !e.originalEvent.touches[0]) {
+      console.warn("Invalid touch event in touchmove");
+      return;
+    }
 
     var currentY = e.originalEvent.touches[0].clientY;
     var deltaY = currentY - startY;
@@ -1273,60 +1316,100 @@ function initBottomSheet() {
     isDragging = false;
     bottomSheet.removeClass("dragging");
 
-    var currentTransform = getTransformValue();
+    try {
+      var currentTransform = getTransformValue();
 
-    // Snap to expanded or collapsed state
-    if (currentTransform > snapThreshold) {
+      // Snap to expanded or collapsed state
+      if (currentTransform > snapThreshold) {
+        collapseSheet();
+      } else {
+        expandSheet();
+      }
+    } catch (err) {
+      console.warn("Error in touch end handler:", err);
+      // Default to collapsed state if there's an error
       collapseSheet();
-    } else {
-      expandSheet();
     }
   })
 
   // Handle click on the handle to expand the sheet
-  handle.on("click", function () {
-    if (!isDragging) {
-      // Only expand the sheet when clicking the handle, don't collapse
-      bottomSheet.addClass("expanded")
-      bottomSheet.css("transform", "translateY(0)")
-    }
-  })
+  if (handle.length) {
+    handle.on("click", function () {
+      if (!isDragging && bottomSheet.length) {
+        // Only expand the sheet when clicking the handle, don't collapse
+        bottomSheet.addClass("expanded");
+        bottomSheet.css("transform", "translateY(0)");
+      }
+    });
+  }
 
   // Handle close button
-  closeBtn.on("click", function () {
-    bottomSheet.removeClass("expanded")
-    bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))")
-  })
+  if (closeBtn.length) {
+    closeBtn.on("click", function () {
+      if (bottomSheet.length) {
+        bottomSheet.removeClass("expanded");
+        bottomSheet.css("transform", "translateY(calc(100% - " + minHeight + "px))");
+      }
+    });
+  }
 
   // Sync events between desktop and mobile
   function syncEvents() {
-    // Copy events from desktop to mobile
-    $("#mobile-events-tbl").html($("#events_tbl").html())
+    // Check if both elements exist before trying to sync
+    var $desktopEvents = $("#events_tbl");
+    var $mobileEvents = $("#mobile-events-tbl");
 
-    // Update mobile event handlers
-    $("#mobile-events-tbl .row-name-trip").on("click", getDetailedEvent)
+    if ($desktopEvents.length && $mobileEvents.length) {
+      // Copy events from desktop to mobile
+      $mobileEvents.html($desktopEvents.html());
+
+      // Update mobile event handlers
+      $("#mobile-events-tbl .row-name-trip").on("click", getDetailedEvent);
+    } else {
+      console.warn("Desktop or mobile events table not found, sync skipped");
+    }
   }
 
   // Sync timepicker selection
-  $(".timepicker td").on("click", function () {
-    var period = $(this).data("period")
+  var $timepickerCells = $(".timepicker td");
+  if ($timepickerCells.length) {
+    $timepickerCells.on("click", function () {
+      var period = $(this).data("period");
+      if (period === undefined) return;
 
-    // Update both desktop and mobile timepickers
-    $("#btn-yesterday, #btn-today, #btn-week, #btn-month").removeClass("active")
-    $(
-      "#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month"
-    ).removeClass("active")
+      // Safely update elements - only manipulate elements that exist
+      function safeRemoveClass(selector, className) {
+        var $elements = $(selector);
+        if ($elements.length) {
+          $elements.removeClass(className);
+        }
+      }
 
-    if (period === 0) {
-      $("#btn-yesterday, #mobile-btn-yesterday").addClass("active")
-    } else if (period === 1) {
-      $("#btn-today, #mobile-btn-today").addClass("active")
-    } else if (period === 2) {
-      $("#btn-week, #mobile-btn-week").addClass("active")
-    } else if (period === 3) {
-      $("#btn-month, #mobile-btn-month").addClass("active")
-    }
-  })
+      function safeAddClass(selector, className) {
+        var $elements = $(selector);
+        if ($elements.length) {
+          $elements.addClass(className);
+        }
+      }
+
+      // Update both desktop and mobile timepickers
+      safeRemoveClass("#btn-yesterday, #btn-today, #btn-week, #btn-month", "active");
+      safeRemoveClass(
+        "#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month", 
+        "active"
+      );
+
+      if (period === 0) {
+        safeAddClass("#btn-yesterday, #mobile-btn-yesterday", "active");
+      } else if (period === 1) {
+        safeAddClass("#btn-today, #mobile-btn-today", "active");
+      } else if (period === 2) {
+        safeAddClass("#btn-week, #mobile-btn-week", "active");
+      } else if (period === 3) {
+        safeAddClass("#btn-month, #mobile-btn-month", "active");
+      }
+    });
+  }
 
   // Add event listener for events table updates
   var observer = new MutationObserver(function (mutations) {
@@ -1338,7 +1421,12 @@ function initBottomSheet() {
   })
 
   // Start observing the events table
-  observer.observe(document.getElementById("events_tbl"), { childList: true })
+  var eventsTable = document.getElementById("events_tbl");
+  if (eventsTable) {
+    observer.observe(eventsTable, { childList: true });
+  } else {
+    console.warn("Events table not found, MutationObserver not initialized");
+  }
 
   // Initial sync
   syncEvents()
