@@ -1000,7 +1000,7 @@ function login(data) {
   //     attribution: "&copy; Google Maps",
   //   }
   // )
-  var gurtam = L.tileLayer.webGis(`https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`, {
+  var gurtam = L.tileLayer.webGis(`https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}`/*`https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`*/, {
     attribution: "&copy; YTM Maps",
     minZoom: 4,
     userId: user.id,
@@ -1371,45 +1371,25 @@ function initBottomSheet() {
   }
 
   // Sync timepicker selection
-  var $timepickerCells = $(".timepicker td");
-  if ($timepickerCells.length) {
-    $timepickerCells.on("click", function () {
-      var period = $(this).data("period");
-      if (period === undefined) return;
+  $(".timepicker td").on("click", function () {
+    var period = $(this).data("period")
 
-      // Safely update elements - only manipulate elements that exist
-      function safeRemoveClass(selector, className) {
-        var $elements = $(selector);
-        if ($elements.length) {
-          $elements.removeClass(className);
-        }
-      }
+    // Update both desktop and mobile timepickers
+    $("#btn-yesterday, #btn-today, #btn-week, #btn-month").removeClass("active")
+    $(
+      "#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month"
+    ).removeClass("active")
 
-      function safeAddClass(selector, className) {
-        var $elements = $(selector);
-        if ($elements.length) {
-          $elements.addClass(className);
-        }
-      }
-
-      // Update both desktop and mobile timepickers
-      safeRemoveClass("#btn-yesterday, #btn-today, #btn-week, #btn-month", "active");
-      safeRemoveClass(
-        "#mobile-btn-yesterday, #mobile-btn-today, #mobile-btn-week, #mobile-btn-month", 
-        "active"
-      );
-
-      if (period === 0) {
-        safeAddClass("#btn-yesterday, #mobile-btn-yesterday", "active");
-      } else if (period === 1) {
-        safeAddClass("#btn-today, #mobile-btn-today", "active");
-      } else if (period === 2) {
-        safeAddClass("#btn-week, #mobile-btn-week", "active");
-      } else if (period === 3) {
-        safeAddClass("#btn-month, #mobile-btn-month", "active");
-      }
-    });
-  }
+    if (period === 0) {
+      $("#btn-yesterday, #mobile-btn-yesterday").addClass("active")
+    } else if (period === 1) {
+      $("#btn-today, #mobile-btn-today").addClass("active")
+    } else if (period === 2) {
+      $("#btn-week, #mobile-btn-week").addClass("active")
+    } else if (period === 3) {
+      $("#btn-month, #mobile-btn-month").addClass("active")
+    }
+  })
 
   // Add event listener for events table updates
   var observer = new MutationObserver(function (mutations) {
