@@ -995,12 +995,12 @@ function login(data) {
   $("#user_name_id").html(user.nm)
   // create a map in the "map" div
   // var google = L.tileLayer(
-  //   "http://mt1.google.com/vt/lyrs=y&x={x}&y={y}43&z={z}",
+  //   `https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`,
   //   {
   //     attribution: "&copy; Google Maps",
   //   }
   // )
-  var gurtam = L.tileLayer.webGis(sess.getBaseGisUrl(), {
+  var gurtam = L.tileLayer.webGis(`https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`, {
     attribution: "&copy; YTM Maps",
     minZoom: 4,
     userId: user.id,
