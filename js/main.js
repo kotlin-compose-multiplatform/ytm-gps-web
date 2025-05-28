@@ -1000,16 +1000,20 @@ function login(data) {
   //     attribution: "&copy; Google Maps",
   //   }
   // )
-  var gurtam = L.tileLayer.webGis(`https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}`/*`https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`*/, {
-    attribution: "&copy; YTM Maps",
-    minZoom: 4,
-    userId: user.id,
+  // var gurtam = L.tileLayer.webGis(`https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}`/*`https://gps.ytm.tm/gis_render/{x}_{y}_{z}/${user.id}/ytm_maps.png`*/, {
+  //   attribution: "&copy; YTM Maps",
+  //   minZoom: 4,
+  //   userId: user.id,
+  // })
+  var google = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", {
+    attribution:
+        "&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors",
   })
   var osm = L.tileLayer("https://{s}.tile.osm.org/{z}/{x}/{y}.png", {
     attribution:
       "&copy; <a href='https://osm.org/copyright'>OpenStreetMap</a> contributors",
   })
-  map = L.map("map_id", { layers: [gurtam] }).setView(
+  map = L.map("map_id", { layers: [google] }).setView(
     [37.9600766, 58.3260629],
     14
   )
@@ -1018,7 +1022,7 @@ function login(data) {
   // Create custom layer control with icon
   var layersControl = L.control.layers(
     {
-      "YTM Maps": gurtam,
+      "YTM Maps": google,
       OpenStreetMap: osm,
     },
     {},
